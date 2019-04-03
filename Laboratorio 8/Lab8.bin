@@ -1,0 +1,120 @@
+;--------------------------------------------------------------------
+;- Descripción: verifica la cantidad de números positivos 
+;-              almacenados
+;- Autor: Pablo Sao
+;- Fecha: 18/03/2019
+;--------------------------------------------------------------------
+
+;--------------------------------------------------------------------
+; iniciando en en memoria 0x3000
+;--------------------------------------------------------------------
+0011 000 000000000
+
+;--------------------------------------------------------------------
+; Almacenando direcciones 
+;--------------------------------------------------------------------
+
+1110 001 000101110 ; R1 con la localidad 0x3030
+1110 010 000111110 ; R2 localidad 0x3040 para almacenar datos sumando 0x3F
+
+;--------------------------------------------------------------------
+; inicializando variables
+;--------------------------------------------------------------------
+
+0101 011 011 000 000 ; inicializando R3
+
+;--------------------------------------------------------------------
+; Asignando valores inmediatos a memoria
+;--------------------------------------------------------------------
+
+0001 011 011 1 00010 ; se asigna 2 a R3
+
+;complemento 2 para R3
+1001 011 011 111111
+0001 011 011 100001
+
+0111 011 001 000001 ; se almacena en la localidad 0x3030
+
+0001 011 011 1 00100 ; se suma 2 a R3
+0111 011 001 000010 ; se almacena en la localidad 0x3031
+
+0001 011 011 1 00010 ; se asigna 2 a R3
+0111 011 001 000011 ; se almacena en la localidad 0x3032
+
+0001 011 011 1 00010 ; se suma 2 a R3
+0111 011 001 000100 ; se almacena en la localidad 0x3033
+
+0001 011 011 1 00010 ; se suma 2 a R3
+0111 011 001 000101 ; se almacena en la localidad 0x3034 
+
+
+;--------------------------------------------------------------------
+; Verificación de valores positivos
+;--------------------------------------------------------------------
+
+; Cargamos información
+
+0110 011 001 000001 ;R3 <- M[0x3030]
+0001 011 011 1 00000 ; R3 <- R3 + 0
+
+0000 100 000000011 ; BRn si la suma anterior es negativa se salta 
+		   ;     las siguientes 3 instrucciones
+
+; Carga información de localidad 0x3040
+0110 011 010 000000  ; R3 <- M[0x3040]
+0001 011 011 1 00001 ; R3 <- R3 + 1
+0111 011 010 000000  ; M[0x3040] <- R3
+
+
+;-------------------
+
+0110 011 001 000010 ;R3 <- M[0x3031]
+0001 011 011 1 00000 ; R3 <- R3 + 0
+
+0000 100 000000011 ; BRn si la suma anterior es negativa se salta 
+		   ;     las siguientes 3 instrucciones
+
+; Carga información de localidad 0x3040
+0110 011 010 000000  ; R3 <- M[0x3040]
+0001 011 011 1 00001 ; R3 <- R3 + 1
+0111 011 010 000000  ; M[0x3040] <- R3
+
+;-------------------
+
+0110 011 001 000011 ;R3 <- M[0x3032]
+0001 011 011 1 00000 ; R3 <- R3 + 0
+
+0000 100 000000011 ; BRn si la suma anterior es negativa se salta 
+		   ;     las siguientes 3 instrucciones
+
+; Carga información de localidad 0x3040
+0110 011 010 000000  ; R3 <- M[0x3040]
+0001 011 011 1 00001 ; R3 <- R3 + 1
+0111 011 010 000000  ; M[0x3040] <- R3
+
+;-------------------
+
+0110 011 001 000100 ;R3 <- M[0x3033]
+0001 011 011 1 00000 ; R3 <- R3 + 0
+
+0000 100 000000011 ; BRn si la suma anterior es negativa se salta 
+		   ;     las siguientes 3 instrucciones
+
+; Carga información de localidad 0x3040
+0110 011 010 000000  ; R3 <- M[0x3040]
+0001 011 011 1 00001 ; R3 <- R3 + 1
+0111 011 010 000000  ; M[0x3040] <- R3
+
+
+;-------------------
+
+0110 011 001 000101 ;R3 <- M[0x3034]
+0001 011 011 1 00000 ; R3 <- R3 + 0
+
+0000 100 000000011 ; BRn si la suma anterior es negativa se salta 
+		   ;     las siguientes 3 instrucciones
+
+; Carga información de localidad 0x3040
+0110 011 010 000000  ; R3 <- M[0x3040]
+0001 011 011 1 00001 ; R3 <- R3 + 1
+0111 011 010 000000  ; M[0x3040] <- R3
