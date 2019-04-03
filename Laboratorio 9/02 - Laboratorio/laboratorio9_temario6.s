@@ -50,22 +50,26 @@ lee_loop:
     	ADD   R2, R1, R2          	@ asignamos a R2 la direccion del array
     	LDR   R1, [R2]            	@ leemos el contenido del array, R1 <- a[i]
 
-	CMP   R1,#0			@ si a[i] < 0
-	ADDMI R3,R3,#1			@ Si es negativo R3 <- R3 + 1
+	CMP   R1,#0			@ si R1 > 0
+	@ADDMI R3,R3,#1			@ si R1 < 0: R3 <- R3 + 1
+	ADDGT R3,R3,#1			@ si R1 > 0: R3 <- R3 + 1
 
-    	PUSH  {R0}               	@ backup register before printf
+	PUSH  {R3}
+	PUSH  {R0}               	@ backup register before printf
 	PUSH  {R1}               	@ backup register before printf
     	PUSH  {R2}               	@ backup register before printf
 
 
-	MOV   R2, R1              	@ move array value to R2 for printf
-    	MOV   R1, R0              	@ move array index to R1 for printf
+	MOV   R2, R1              	@ se mueve valor del array a R2
+    	MOV   R1, R0              	@ se mueve el indice del array a R1
 
 	BL    imprime             	@ branch to print procedure with return
 
 	POP   {R2}                	@ restore register
     	POP   {R1}                	@ restore register
     	POP   {R0}                	@ restore register
+
+	POP   {R3}
 
 	ADD   R0, R0, #1          	@ increment index
     	B     lee_loop            	@ branch to next loop iteration
@@ -75,7 +79,7 @@ termina_id:
 
 _exit:
     	LDR   R0, =resultado	@ cargamos el string de resultado
-	MOV   R3, #3
+	
 	MOV   R1, R3		@ R1 <- R3
     	BL    printf		@ mostramos el resutlado
 
@@ -85,6 +89,7 @@ _exit:
 
 imprime:
    	PUSH  {LR}               	@ store the return address
+
     	LDR   R0, =printf_str     	@ R0 contains formatted string address
     	BL    printf               	@ call printf
     	POP   {PC}                	@ restore the stack pointer and return
@@ -98,9 +103,10 @@ printf_str:
 	.asciz "a[%d] = %d\n"
 
 resultado:
-	.asciz "\nNumeros negativos: %d\n"
+	@.asciz "\nNumeros Negativos: %d\n\n"
+	.asciz "\nNumeros Positivos: %d\n\n"
 
 mensaje_array:
-	.ascii "Listado a Evaluar.\n"
+	.ascii "\nListado a Evaluar:\n"
 
 
