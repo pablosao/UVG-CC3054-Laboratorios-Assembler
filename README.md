@@ -7,6 +7,9 @@ de Computadoras y Assembler** de la **Universidad del Valle de Guatemala**.
 * Raspberry Pi B+
 
 
+## Laboratorios
+A continuación se presenta una breve descripción de los laboratorios contenidos en el repositorio, en algunos casos los laboratorios contienen un pre laboratorio, el cual tambien se describe y se agrega el código.
+
 ### Laboratorio 8: Temario 6
 Utilizando el simulador LC-3, cree un archivo binario (.bin) y de una lista de 5 números en complemento a 2 almacenados
 consecutivamente desde la localidad de memoria x3030, calcule cuántos números son positivos, guarde el resultado en la localidad x3040.
