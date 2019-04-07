@@ -38,7 +38,8 @@ cambiaCH:
 	
 	LDRB  R1,[R4,R6] @cargar byte
 	
-	AND   R1,R1,#0xF7
+	CMP   R1, #0x21
+	ANDGE R1,R1,#0xF7
 	
 	STRB  R1,[R4,R6]
 	@LDR   R0,=resultado
