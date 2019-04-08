@@ -15,53 +15,86 @@
 main:
 	STMFD SP!,{LR}	
 	
-	LDR   R0, =sol_ingreso		@ cargando direccion de mensaje
-	BL    puts					@ mostrando mensaje en pantalla
-
-	MOV   R4, #10				@ Contador para ingreso de datos
-	LDR   R5, =dvector			@ dirección del vector
-	LDR   R8, #0				@ indice del vector
-
-
+	MOV   R4, #10		@ Contador para ingreso de datos
+	LDR   R5, =dvector	@ dirección del vector
+	
 cargaVector:
 	
-	LDR   r0,=in_msj			@ cargamos mensaje para ingreso de datos
-	BL    puts					@ mostramos mensaje de ingreso
+	LDR   r0,=in_msj	@ cargamos mensaje para ingreso de datos
+	BL    puts		@ mostramos mensaje de ingreso
 	
 	LDR   R0,=ingreso
 	LDR   R1,=valor
 	BL    scanf
 	
-	LDR   R1,[R1]
-	STRB  R1,[R5,R8]
+	/*  Cargando valor ingresado   */
+	LDR   R1, =valor
+	LDR   R1, [R1]
 	
+	/*  Cargando posición del vector   */
+	STR   R1,[R5]
+
+	/*   Imprimiento datos ingresados - Prueba  */
+	@ LDR   R0, =display
+	@ BL    printf
 	
-	/* comparación para hacer ciclo */
-	SUBS  R8,#1
-	CMP   R8,#0
+	ADD   R5, #4
+	SUBS  R4, #1
+	CMP   R4, #0
 	BNE   cargaVector
 
-
-	LDR   R4, =dvector
-	MOV   R8, #10
-	MOV   R6, #0
+	MOV   R4, #10
+	LDR   R5, =dvector
+	ADD   R5, #4
 	
-imprimeV:
+	LDR   R0, =msj_vectorO
+	BL    puts
 
-	@Cargar datos del arreglo caracteres e imprimirlo
+/*   Imprime vector original   */
+
+print_vectorO:
 	
-	LDRB  R1,[R8,R6] @cargar byte
-
-	LDR   R0,=display
+	LDR   R1,[R5]
+	
+	/*   Imprimiento datos ingresados - Prueba  */
+	LDR   R0, =display
 	BL    printf
 	
-	ADD   R6,#1
-	SUBS  R8,#1
-	CMP   R8,#0
-	BNE   imprimeV
+	
+	ADD   R5, #4
+	SUBS  R4, #1
+	CMP   R4, #0		
+	BNE   print_vectorO 
+	
 
+	MOV   R4, #10
+	LDR   R5, =dvector
+	ADD   R5, #36
+	
+	MOV   R0, #0
+	LDR   R0, =msj_vectorI
+	BL    puts
+	
+/*   Imprime vector invertido  */
 
+print_vectorI:
+	
+	LDR   R1,[R5]
+	
+	/*   Imprimiento datos ingresados - Prueba  */
+	LDR   R0, =display
+	BL    printf
+	
+	
+	SUB   R5, #4
+	SUBS  R4, #1
+	CMP   R4, #0		
+	BNE   print_vectorI 
+	
+	
 _exit:
+	LDR   R0, =espacio
+	BL    puts
 	
 	LDMFD SP!,{LR}
 	BX    LR
@@ -72,17 +105,23 @@ _exit:
 dvector:
 	.word 0,0,0,0,0,0,0,0,0,0
 
-ingreso:
-	.asciz "%d"
-
 in_msj:
 	.asciz "Ingrese Numero: "
 
-entrada:
-	.asciz " %d"
+ingreso:
+	.asciz "%d"
 
 valor:
 	.word 0
 	
 display:
-	.word "%d "
+	.asciz "%d "
+
+espacio:
+	.asciz "\n"
+
+msj_vectorI:
+	.asciz "\n\nVector Invertido:\n"
+
+msj_vectorO:
+	.asciz "\n\nVector Original:\n"
