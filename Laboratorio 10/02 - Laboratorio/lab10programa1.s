@@ -13,7 +13,8 @@
 .type main,%function
 
 main:
-	STMFD SP!,{LR}	
+	STMFD SP!,{LR}
+		
 	
 	MOV   R4, #10		@ Contador para ingreso de datos
 	LDR   R5, =dvector	@ dirección del vector
@@ -26,26 +27,24 @@ cargaVector:
 	LDR   R0,=ingreso
 	LDR   R1,=valor
 	BL    scanf
-	
+
 	/*  Cargando valor ingresado   */
-	LDR   R1, =valor
-	LDR   R1, [R1]
+	LDR   R1, =valor		@ dirección del valor ingresado
+	LDR   R1, [R1]			@ cargamos valor de la direccion
 	
+
 	/*  Cargando posición del vector   */
-	STR   R1,[R5]
-
-	/*   Imprimiento datos ingresados - Prueba  */
-	@ LDR   R0, =display
-	@ BL    printf
+	STR   R1,[R5]			@ almacenamos cambio
 	
-	ADD   R5, #4
-	SUBS  R4, #1
-	CMP   R4, #0
-	BNE   cargaVector
 
-	MOV   R4, #10
-	LDR   R5, =dvector
-	ADD   R5, #4
+	ADD   R5, #4			
+	SUBS  R4, #1			@ restamos control contador
+	CMP   R4, #0			@ si R4 < 0
+	BNE   cargaVector		@ salta al ciclo
+
+	MOV   R4, #10			@ reseteamos contador de ciclo
+	LDR   R5, =dvector		@ cargamos direccion de vector
+	
 	
 	LDR   R0, =msj_vectorO
 	BL    puts
@@ -79,22 +78,22 @@ print_vectorO:
 
 print_vectorI:
 	
-	LDR   R1,[R5]
+	LDR   R1,[R5]			@ dirección de vector
 	
 	/*   Imprimiento datos ingresados - Prueba  */
 	LDR   R0, =display
 	BL    printf
 	
 	
-	SUB   R5, #4
-	SUBS  R4, #1
-	CMP   R4, #0		
+	SUB   R5, #4			@ R5 <- R5 - 4, Dirección vector
+	SUBS  R4, #1			@ R4 <- R4 - 1, restando control ciclo
+	CMP   R4, #0			@ salto a inicio de ciclo
 	BNE   print_vectorI 
 	
 	
 _exit:
-	LDR   R0, =espacio
-	BL    puts
+	LDR   R0, =espacio		@ se carga dirección para imprimir
+	BL    puts			@    salto de linea
 	
 	LDMFD SP!,{LR}
 	BX    LR

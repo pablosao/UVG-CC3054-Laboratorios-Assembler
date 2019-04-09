@@ -2,8 +2,8 @@
 /********************************************************************/
 /* 	  Autor: Pablo Sao					    */
 /* 	  Fecha: 8 de abril de 2019				    */
-/*  Descripcion: convierte de minuscula a mayuscula el nombre */
-/* 		 ingresado por el usuario	    */
+/*  Descripcion: convierte de minuscula a mayuscula el nombre       */
+/* 		 ingresado por el usuario	                    */
 /********************************************************************/
 
 
@@ -29,26 +29,31 @@ main:
 	MOV   R5, #10		@ iniciamos el contador
 	MOV   R6, #0		@ indice de caracter
 
-	@LDR   R4, =prueba   @ cargando prueba estatica
+	@LDR   R4, =prueba   	@ cargando prueba estatica
 
 cambiaCH:
 	
 	@Cargar datos del arreglo caracteres e imprimirlo
 	
-	LDRB  R1,[R4,R6] @cargar byte
+	LDRB  R1,[R4,R6] 	@ carga byte [char] de la cadena
 	
-	@ proceso para cambiar a mayusculas
-	CMP   R1, #0x60
-	CMPGT R1, #0x7A
-	SUBLT R1,R1,#0x20		@ Restamos 0x20, minuscula a mayuscula
+	/*  Cambio a mayusculas   */
 	
-	@ANDGE R1,R1,#0xF7
-	@SUB   R1,R1,#0x20
+	CMP   R1, #0x60		@ si R1 > 0x60 (hex ascii) 
 	
+	/*
+		La idea principal era permitir solo minusculas
+		pero al hacerlo solo tomaba los caracteres antes
+		de un espacio ingresado, por lo que se quito para
+		poder ingresar espacio.
+	*/
+
+	@ CMPGT R1, #0x7B
+	@ SUBLT R1,R1,#0x20	@ Restamos 0x20, minuscula a mayuscula
 	
-	STRB  R1,[R4,R6]
-	@LDR   R0,=resultado
-	@BL    printf
+	SUBGT R1, R1, #0x20	@ Restamos 0x20, minuscula a mayuscula
+
+	STRB  R1,[R4,R6]	@ guardamos char en la posición tomada
 	
 	ADD   R6,#1
 	SUBS  R5,#1
@@ -56,7 +61,7 @@ cambiaCH:
 	BNE   cambiaCH
 
 _exit:
-	LDR   R0, =ingreso
+	LDR   R0, =ingreso	@ cargamos formato de impresión
 	BL    puts
 	
 	LDMFD SP!,{LR}
@@ -69,15 +74,8 @@ _exit:
 prueba:
 	.asciz "hola mundo"
 
-resultado:
-	.asciz "%c "
-
-str_resultado:
-	.asciz "%s\n"
-
 sol_ingreso:
 	.asciz "Ingrese su nombre (10 caracteres max.): "
 
 ingreso:
 	.asciz "%s"
-
