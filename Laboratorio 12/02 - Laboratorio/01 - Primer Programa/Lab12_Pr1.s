@@ -39,13 +39,75 @@ _esNumero:
 	LDR   R0, =displayNum
 	BL    printf
 
+	LDR   R0, =0x3F200000
+ 	BL    phys_to_virt
+ 	
+	@**   Configuramos escritura en GPIO
+	MOV   R1, #1
+	LSL   R1, #18
+	STR   R1, [R0, #4]
+
+	@**   Configuramos pin 17
+	MOV   R1, #1
+	LSL   R1, #17	@ TEMPORAL EL 16
+
+	@**   Encendemos el puerto
+	STR   R1, [R0, #28]
+
+	PUSH  {R0}
+	PUSH  {R1}
+	
+	BL    _espera				@ Rutina de espera
+	
+	POP   {R1}
+	POP   {R0}
+
+	@ Apagamos el puerto
+	STR   R1, [R0, #40]
+	
 	BL    _exit
 
 _esCaracter:
 	LDR   R0, =displayCh
 	BL    printf
 
+	LDR   R0, =0x3F200000
+ 	BL    phys_to_virt
+ 	
+	@**   Configuramos escritura en GPIO
+	MOV   R1, #1
+	LSL   R1, #18
+	STR   R1, [R0, #4]
+
+	@**   Configuramos pin 16
+	MOV   R1, #1
+	LSL   R1, #16  @ TEMPORAL EL 16
+
+	@**   Encendemos el puerto
+	STR   R1, [R0, #28]
+
+	PUSH  {R0}
+	PUSH  {R1}
+	
+	BL    _espera				@ Rutina de espera
+	
+	POP   {R1}
+	POP   {R0}
+
+	@ Apagamos el puerto
+	STR   R1, [R0, #40]
+	
 	BL    _exit
+
+@****    Metodo de espera utilizando libreria de C
+_espera:
+	PUSH  {LR}
+
+	MOV   R0, #6				@ Esperamos 5 segundos aproximadamente
+	bl    sleep
+	NOP
+	
+	POP   {PC}
 
 _exit:
 	LDMFD SP!,{LR}
@@ -61,7 +123,7 @@ msjIngreso:
 
 .align 2
 dataIn:
-	.ascii ""
+	.ascii " "
 
 .align 2
 displayNum:
