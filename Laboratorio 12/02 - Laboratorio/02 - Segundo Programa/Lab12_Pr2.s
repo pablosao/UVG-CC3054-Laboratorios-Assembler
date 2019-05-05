@@ -26,15 +26,15 @@ main:
 	CMP   R0, #0
 	BEQ   _error
 
-	LDR   R1, =dataIn
-	LDRB  R1, [R1]
+	LDR   R1, =opcionIngreso
+	LDR   R1, [R1]
 
 	B     _exit
 	
 
 
 _error:
-	LDR   R0, =opcionIn
+	LDR   R0, =opcionIngreso
 	MOV   R1, #0
 	STR   R1,[R0]
 	BL    getchar
@@ -70,7 +70,7 @@ msjIngreso:
 
 .align 2
 msjError:
-	.ascii "\n\tIngreso un valor invalido\n"
+	.asciz "\n\tIngreso un valor invalido\n"
 	
 .align 2
 formatoIngreso:
