@@ -1,6 +1,6 @@
 
 /**********************************************************************/
-/*         Autor: Pablo Sao                                           */
+/*         Autor: Pablo Sao y Andrea Palencia                         */
 /*         Fecha: 05 de mayo de 2019                                  */
 /*   Descripcion: Si ingresa un número, enciente led en GPIO 17       */
 /*                Si es un caracter, enciente led en GPIO 22          */
@@ -13,9 +13,9 @@
 
 main:
 	STMFD SP!, {LR}
-
-	LDR   R0, =msjIngreso 			@ dirección de mensaje
-	BL    puts
+	
+	LDR  R0, =msjIngreso 			@ dirección de mensaje
+	BL   puts
 
 	@** Lectura de  teclado, mediante Interrupcion de OS
 
@@ -39,71 +39,60 @@ _esNumero:
 	LDR   R0, =displayNum
 	BL    printf
 
-	LDR   R0, =0x3F200000
- 	BL    phys_to_virt
- 	
-	@**   Configuramos escritura en GPIO
-	MOV   R1, #1
-	LSL   R1, #18
-	STR   R1, [R0, #4]
+	BL   GetGpioAddress			@ Llamamos dirección
 
-	@**   Configuramos pin 17
-	MOV   R1, #1
-	LSL   R1, #17	@ TEMPORAL EL 16
+	MOV  R0, #17				@ Seteamos pin 17
+	MOV  R1, #1				@ Configuramos salida
 
-	@**   Encendemos el puerto
-	STR   R1, [R0, #28]
+	BL   SetGpioFunction			@ Configuramos puerto
 
-	PUSH  {R0}
-	PUSH  {R1}
+	@**** Encendemos pin
+	MOV  R0, #17
+	MOV  R1, #1
+	BL   SetGpio
+
 	
 	BL    _espera				@ Rutina de espera
 	
-	POP   {R1}
-	POP   {R0}
+	@**** Apagamos pin
+	MOV  R0, #17
+	MOV  R1, #0
+	BL   SetGpio
 
-	@ Apagamos el puerto
-	STR   R1, [R0, #40]
-	
 	BL    _exit
 
 _esCaracter:
 	LDR   R0, =displayCh
 	BL    printf
 
-	LDR   R0, =0x3F200000
- 	BL    phys_to_virt
- 	
-	@**   Configuramos escritura en GPIO
-	MOV   R1, #1
-	LSL   R1, #18
-	STR   R1, [R0, #4]
+	BL   GetGpioAddress			@ Llamamos dirección
 
-	@**   Configuramos pin 16
-	MOV   R1, #1
-	LSL   R1, #16  @ TEMPORAL EL 16
+	MOV  R0, #22				@ Seteamos pin 17
+	MOV  R1, #1				@ Configuramos salida
 
-	@**   Encendemos el puerto
-	STR   R1, [R0, #28]
+	BL   SetGpioFunction			@ Configuramos puerto
 
-	PUSH  {R0}
-	PUSH  {R1}
+	@**** Encendemos pin
+	MOV  R0, #22
+	MOV  R1, #1
+	BL   SetGpio
+
 	
 	BL    _espera				@ Rutina de espera
 	
-	POP   {R1}
-	POP   {R0}
+	@**** Apagamos pin
+	MOV  R0, #22
+	MOV  R1, #0
+	BL   SetGpio
 
-	@ Apagamos el puerto
-	STR   R1, [R0, #40]
-	
 	BL    _exit
+
 
 @****    Metodo de espera utilizando libreria de C
 _espera:
 	PUSH  {LR}
 
-	MOV   R0, #6				@ Esperamos 5 segundos aproximadamente
+	MOV   R0, #2				@ Esperamos 5 segundos aproximadamente
 	bl    sleep
 	NOP
 	
@@ -132,3 +121,8 @@ displayNum:
 .align 2
 displayCh:
 	.asciz "Caracter: %c\n"
+
+.align 2
+.global myloc
+myloc:
+	.word 0

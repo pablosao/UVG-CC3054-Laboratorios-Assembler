@@ -1,6 +1,6 @@
 
 /**********************************************************************/
-/*         Autor: Pablo Sao                                           */
+/*         Autor: Pablo Sao y Andrea Palencia                         */
 /*         Fecha: 05 de mayo de 2019                                  */
 /*   Descripcion: Si ingresa un número, enciente led en GPIO 17       */
 /*                Si es un caracter, enciente led en GPIO 22          */
@@ -13,44 +13,225 @@
 
 main:
 	STMFD SP!, {LR}
-
-	LDR   R0, =msjIngreso 			@ dirección de mensaje
-	BL    puts
-
-	@** Lectura de  teclado
-	LDR   R0, =formatoIngreso
-	LDR   R1, =opcionIngreso
-	BL    scanf
-
-	@**   verificamos que se haya ingresado un número
-	CMP   R0, #0
-	BEQ   _error
-
-	LDR   R1, =opcionIngreso
-	LDR   R1, [R1]
-
-	B     _exit
 	
+	BL   GetGpioAddress			@ Llamamos dirección
+
+	MOV  R0, #24				@ Seteamos pin 
+	MOV  R1, #1				@ Configuramos salida
+
+	BL   SetGpioFunction			@ Configuramos puerto
+
+	MOV  R0, #17				@ Seteamos pin 17
+	MOV  R1, #1				@ Configuramos salida
+
+	BL   SetGpioFunction			@ Configuramos puerto
+
+	MOV  R0, #22				@ Seteamos pin 22
+	MOV  R1, #1				@ Configuramos salida
+
+	BL   SetGpioFunction			@ Configuramos puerto
 
 
-_error:
-	LDR   R0, =opcionIngreso
-	MOV   R1, #0
-	STR   R1,[R0]
-	BL    getchar
-	
-	LDR   R0, =msjError
-	BL    puts
-	
+	LDR  R0, =msjIngreso 			@ dirección de mensaje
+	BL   puts
+
+	@** Lectura de  teclado, mediante Interrupcion de OS
+
+	MOV   R7, #3				@ codigo de interrupcion para lectura
+	MOV   R0, #0				@ indicando que es en monitor
+	MOV   R2, #1				@ solo leeremos 1 caracter
+	LDR   R1, =dataIn
+	SWI   0
+
+	LDR   R1, =dataIn
+	LDRB  R1, [R1]
+
+	CMP   R1, #0x31				@ Si R1 = 1
+	BEQ   _uno
+
+	CMP   R1, #0x32				@ Si R1 = 2
+	BEQ   _dos
+
+	CMP   R1, #0x33				@ Si R1 = 3
+	BEQ   _tres
+
+	CMP   R1, #0x34				@ Si R1 = 4
+	BEQ   _cuatro
+
+	CMP   R1, #0x35				@ Si R1 = 5
+	BEQ   _cinco
+
+	CMP   R1, #0x36				@ Si R1 = 6
+	BEQ   _seis
+
+	CMP   R1, #0x37				@ Si R1 = 7
+	BEQ   _siete
+
 	B     main
+	
 
+_uno:
+	LDR   R0, =displayNum
+	BL    printf
+
+
+	@**** Mostramos 1
+	
+	MOV  R0, #22
+	MOV  R1, #1
+	BL   SetGpio
+
+	
+	BL    _espera				@ Rutina de espera
+	
+	@**** Apagamos pin
+	B    _apagado
+
+_dos:
+	LDR   R0, =displayNum
+	BL    printf
+
+
+	@**** Mostramos 1
+	
+	MOV  R0, #24
+	MOV  R1, #1
+	BL   SetGpio
+
+
+
+	BL    _espera				@ Rutina de espera
+	
+	@**** Apagamos pin
+	B    _apagado
+
+
+_tres:
+	LDR   R0, =displayNum
+	BL    printf
+
+
+	@**** Mostramos 1
+
+	MOV  R0, #24
+	MOV  R1, #1
+	BL   SetGpio
+
+	MOV  R0, #22
+	MOV  R1, #1
+	BL   SetGpio
+
+	
+	BL    _espera				@ Rutina de espera
+	
+	@**** Apagamos pin
+	B    _apagado
+
+
+_cuatro:
+	LDR   R0, =displayNum
+	BL    printf
+
+
+	@**** Mostramos 1
+
+	MOV  R0, #17
+	MOV  R1, #1
+	BL   SetGpio
+	
+	BL    _espera				@ Rutina de espera
+	
+	@**** Apagamos pin
+	B    _apagado
+
+
+_cinco:
+	LDR   R0, =displayNum
+	BL    printf
+
+
+	@**** Mostramos 1
+
+	MOV  R0, #17
+	MOV  R1, #1
+	BL   SetGpio
+	
+	MOV  R0, #22
+	MOV  R1, #1
+	BL   SetGpio
+
+	BL    _espera				@ Rutina de espera
+	
+	@**** Apagamos pin
+	B    _apagado
+
+_seis:
+	LDR   R0, =displayNum
+	BL    printf
+
+
+	@**** Mostramos 1
+
+	MOV  R0, #24
+	MOV  R1, #1
+	BL   SetGpio
+	
+	MOV  R0, #17
+	MOV  R1, #1
+	BL   SetGpio
+
+	BL    _espera				@ Rutina de espera
+	
+	@**** Apagamos pin
+	B    _apagado
+
+_siete:
+	LDR   R0, =displayNum
+	BL    printf
+
+
+	@**** Mostramos 1
+
+	MOV  R0, #24
+	MOV  R1, #1
+	BL   SetGpio
+	
+	MOV  R0, #17
+	MOV  R1, #1
+	BL   SetGpio
+
+	MOV  R0, #22
+	MOV  R1, #1
+	BL   SetGpio
+
+	BL    _espera				@ Rutina de espera
+	
+	@**** Apagamos pin
+	B    _apagado
+
+
+_apagado:
+	@**** Apagamos pin
+	MOV  R0, #24
+	MOV  R1, #0
+	BL   SetGpio
+
+	MOV  R0, #17
+	MOV  R1, #0
+	BL   SetGpio
+
+	MOV  R0, #22
+	MOV  R1, #0
+	BL   SetGpio
+	
+	BL   _exit
 
 
 @****    Metodo de espera utilizando libreria de C
 _espera:
 	PUSH  {LR}
 
-	MOV   R0, #6				@ Esperamos 5 segundos aproximadamente
+	MOV   R0, #1				@ Esperamos 5 segundos aproximadamente
 	bl    sleep
 	NOP
 	
@@ -66,21 +247,21 @@ _exit:
 
 .align 2
 msjIngreso:
-	.ascii "Ingrese 1 numero del 1 al 9 (1 caracter): "
+	.ascii "Ingrese 1 caracter (número o letra): "
 
 .align 2
-msjError:
-	.asciz "\n\tIngreso un valor invalido\n"
-	
-.align 2
-formatoIngreso:
-	.asciz "%d"
+dataIn:
+	.ascii " "
 
 .align 2
-opcionIngreso:
-	.word 0
-
-.align 2
-display:
+displayNum:
 	.asciz "Número: %c\n"
 
+.align 2
+displayCh:
+	.asciz "Caracter: %c\n"
+
+.align 2
+.global myloc
+myloc:
+	.word 0
