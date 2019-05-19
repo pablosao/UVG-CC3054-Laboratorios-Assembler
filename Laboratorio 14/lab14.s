@@ -16,7 +16,7 @@ main:
 	BL   GetGpioAddress			@ Llamamos dirección
 
 	/**   Configurando puertos para control de stepper   **/
-	MOV  R0, #21				@ Seteamos pin 
+	MOV  R0, #14				@ Seteamos pin 
 	MOV  R1, #1					@ Configuramos salida
 	
 	BL   SetGpioFunction
@@ -26,14 +26,19 @@ main:
 
 
 _running:
+
 	@** Limpiando terminal
 	LDR   R0, =CLEAR
 	BL    puts
 
 	@**   Despliegue de menú
 	LDR   R0, =menu
-	BL puts
+	BL    puts
 
+	@** Indicando que ingrese opción del menú
+	LDR   R0, =msjOpcion
+	BL    puts
+	
 	@**   Comando para Ingreso de teclado
 	LDR   R0, =fIngreso
 	LDR   R1, =opcionIn
@@ -91,12 +96,12 @@ _opcion1:
 		BL   ENCENDIDO		@ Encendiendo pin 24
 
 		MOV  R0, #1
-		BL   ESPERASEG2		@ Espera de 1 segundos
+		BL   ESPERASEG		@ Espera de 1 segundos
 
 		BL   APAGADO		@ Apagando pin 24
 
 		MOV  R0, #1
-		BL   ESPERASEG2		@ Espera de 1 segundo
+		BL   ESPERASEG		@ Espera de 1 segundo
 
 		POP  {R6}
 
@@ -162,7 +167,7 @@ APAGADO:
 	PUSH  {LR}
 	
 	@**   apagando pin 24
-	MOV   r0,#21
+	MOV   r0,#14
 	MOV   r1,#0
 	BL    SetGpio
 	
@@ -173,7 +178,7 @@ ENCENDIDO:
 	PUSH  {LR}
 	
 	@**   apagando pin 24
-	MOV   r0,#21
+	MOV   r0,#14
 	MOV   r1,#1
 	BL    SetGpio
 	
@@ -189,35 +194,6 @@ ESPERASEG:
 
 	POP   {PC}
 	
-.align 2
-.global ESPERASEG2
-ESPERASEG2:
-	PUSH  {LR}
-
-	# call delay funtcion
-    LDR R0,=delayReg
-    LDR R0,[R0]	
-    BL delay  
-
-	POP   {PC}
-
-@ ---------------------------
-@ Delay function
-@ Input: r0 delay counter val
-@ ---------------------------
-delay:
-    mov r7,#0
-    b compare
-	
-	loop:
-		add r7,#1     @r7++
-
-	compare:
-		cmp r7,r0     @test r7 == r0
-		bne loop
-
-   mov pc,lr
- 
 
 _exit:
 	LDMFD SP!,{LR}
@@ -228,11 +204,14 @@ _exit:
 .data
 .align 2
 menu:
-	.ascii "\tOpciones de Control\n\t1) Tiempo 1 Segundo.\n\t2) Tiempo 2 Segundos.\n\t3) Tiempo 4 segundos.\n\t4) Salir.\nIngrese Opción:"
+	.ascii "\tOpciones de Control\n\t1) Tiempo 1 Segundo.\n\t2) Tiempo 2 Segundos.\n\t3) Tiempo 4 segundos.\n\t4) Salir."
 
-	
 .align 2
-.global CLEAR
+msjOpcion:
+	.asciz "Ingrese Opción:"
+
+
+.align 2
 CLEAR:
 	.asciz "\033[H\033[J"
 
@@ -251,7 +230,4 @@ myloc:
 .align 2
 msjError:
 	.ascii "Opcion incorrecta\n"
-
-.balign 4
-delayReg:
-	.word 990000
+	
