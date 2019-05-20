@@ -130,6 +130,7 @@ _subMenu:
 	BLGT _error2
 
 
+@**** Ingreso de repetición de valores
 ingresoRepeticion:
 	@**   Despliegue de menú
 	LDR   R0, =msjIngreso
@@ -159,9 +160,11 @@ ingresoRepeticion:
 
 	
 
-
+@**  Encendido del LED
 onLED:
 	PUSH  {LR}
+	
+	@ Cargamos identificador de LED
 	LDR   R3, =numLed
 	LDR   R3, [R3]
 
@@ -174,8 +177,11 @@ onLED:
 
 	POP   {PC}
 
+@**  Apagado del LED
 offLED:
 	PUSH  {LR}
+
+	@ Cargamos identificador de LED
 	LDR   R3, =numLed
 	LDR   R3, [R3]
 
@@ -188,6 +194,7 @@ offLED:
 
 	POP   {PC}
 
+@****    Alternación de encendido
 alternacion:
 	PUSH  {LR}
 	BL    onLED
@@ -219,7 +226,7 @@ _error:
 
 	B     _running					@ Regresamos a rutina de ejecución
 
-@****    Error de ingreso de primer ciclo
+@****    Error de ingreso de segundo ciclo
 _error2:
 	LDR   R0, =opcionIn				@ Cargamos dirección de opción
 	MOV   R1, #0
@@ -227,7 +234,7 @@ _error2:
 	BL    getchar
 	B     _subMenu					@ Regresamos a rutina de ejecución
 
-@****    Error de ingreso de primer ciclo
+@****    Error de ingreso de tercer ciclo
 _error3:
 	LDR   R0, =opcionIn				@ Cargamos dirección de opción
 	MOV   R1, #0
